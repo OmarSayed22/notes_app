@@ -8,7 +8,7 @@ class MyHomePage extends StatelessWidget {
         title: const Text('Notes App'),
       ),
       body: Container(
-        color: Colors.red,
+        color: Colors.green,
       ),
     );
   }
