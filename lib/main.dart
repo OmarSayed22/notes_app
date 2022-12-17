@@ -10,6 +10,6 @@ class NotesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MyHomePage());
+    return  MaterialApp(home: MyHomePage());
   }
 }
