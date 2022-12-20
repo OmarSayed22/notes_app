@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:notes_app/presentation/widgets/custom_text_field.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notes_app/presentation/manager/note_cubit.dart';
 
-Widget modalBottomSheet() {
+import 'add_note_form.dart';
 
+class ModelBottomSheet extends StatelessWidget {
+  const ModelBottomSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: const [
-          SizedBox(height: 30),
-          CustomTextField(
-              hintText: 'Title',
-              hintTextColor:  Color(0xff53ebd6),
-              borderColor: Colors.white,
-              maxLines: 1),SizedBox(height: 16,),
-          CustomTextField(
-              hintText: 'Content',
-              hintTextColor:  Color(0xff53ebd6),
-              borderColor: Colors.white,
-              maxLines: 5),
-        ],
+      child: BlocConsumer<NoteCubit, NoteState>(
+        listener: (context, state) {
+          if (state is AddNoteFailureState) {
+            print(state.errorMessage);
+          }
+        },
+        builder: (context, state) {
+          if (state is! AddNoteLoadingState) {
+            return const AddNoteForm();
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
       ),
     );
   }
+}
