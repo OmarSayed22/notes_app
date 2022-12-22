@@ -1,10 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:notes_app/presentation/manager/note_cubit.dart';
 
+import '../../data/models/note_model.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_text_field.dart';
 
-class EditNotePage extends StatelessWidget {
-  const EditNotePage({super.key});
+class EditNotePage extends StatefulWidget {
+  EditNotePage(this.note, this.index, {super.key});
+
+  NoteModel note;
+  int index;
+
+  @override
+  State<EditNotePage> createState() => _EditNotePageState();
+}
+
+class _EditNotePageState extends State<EditNotePage> {
+  AutovalidateMode autoValidateMode = AutovalidateMode.disabled;
+
+  String? title, subTitle;
+
+  GlobalKey<FormState> formKey = GlobalKey();
+
+  Color pickerColor = Color(0xff443a49);
+
+  Color currentColor = Color(0xff443a49);
 
   @override
   Widget build(BuildContext context) {
@@ -19,33 +41,33 @@ class EditNotePage extends StatelessWidget {
               color: Colors.white,
             ),
             onPressedIcon: () {
-              Navigator.pop(context);
+              if (formKey.currentState!.validate()) {
+                formKey.currentState!.save();
+                NoteModel updatedNote = NoteModel(
+                  title: title!,
+                  subTitle: subTitle!,
+                  date: widget.note.date,
+                  color: currentColor.value,
+                );
+                context
+                    .read<NoteCubit>()
+                    .updateNotes(widget.index, updatedNote);
+
+                Navigator.pop(context);
+              } else {
+                autoValidateMode = AutovalidateMode.always;
+              }
             }),
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: EditNote(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: buildForm(widget.note, widget.index),
       ),
     );
   }
-}
 
-class EditNote extends StatefulWidget {
-  const EditNote({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<EditNote> createState() => _EditNoteState();
-}
-
-class _EditNoteState extends State<EditNote> {
-  AutovalidateMode autoValidateMode = AutovalidateMode.disabled;
-  String? title, subTitle;
-  GlobalKey<FormState> formKey = GlobalKey();
-
-  @override
-  Widget build(BuildContext context) {
+  Form buildForm(NoteModel note, int index) {
+    void changeColor(Color color) => setState(() => pickerColor = color);
     return Form(
       autovalidateMode: autoValidateMode,
       key: formKey,
@@ -53,27 +75,76 @@ class _EditNoteState extends State<EditNote> {
         children: [
           const SizedBox(height: 30),
           CustomTextField(
+              controller: TextEditingController(text: note.title),
               onSaved: (value) => title = value,
-              hintText: 'Title',
               hintTextColor: const Color(0xff53ebd6),
               borderColor: Colors.white,
               maxLines: 1),
           const SizedBox(
             height: 16,
           ),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomTextField(
-                    onSaved: (value) => subTitle = value,
-                    hintText: 'Content',
-                    hintTextColor: const Color(0xff53ebd6),
-                    borderColor: Colors.white,
-                    maxLines: 5),
-              ],
-            ),
+          CustomTextField(
+              controller: TextEditingController(text: note.subTitle),
+              onSaved: (value) => subTitle = value,
+              hintTextColor: const Color(0xff53ebd6),
+              borderColor: Colors.white,
+              maxLines: 5),
+          SizedBox(
+            height: 20,
           ),
+          GestureDetector(
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Select a color!'),
+                        content: SingleChildScrollView(
+                          child: BlockPicker(
+                              pickerColor: pickerColor,
+                              onColorChanged: changeColor),
+                        ),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            child: const Text('Got it'),
+                            onPressed: () {
+                              setState(() => currentColor = pickerColor);
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 10,
+                    height: 50,
+                    color: currentColor,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          'Note Color',
+                          style: TextStyle(fontSize: 24, color: Colors.red),
+                        ),
+                        Text(
+                          'Select a color!',
+                          style: TextStyle(fontSize: 16, color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )),
         ],
       ),
     );

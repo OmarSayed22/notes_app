@@ -15,3 +15,19 @@ class AddNoteFailureState extends NoteState {
     this.errorMessage,
   );
 }
+
+class NoteSuccessState extends NoteState {
+  List<NoteModel> notes;
+
+  NoteSuccessState(this.notes);
+}
+
+class NoteFailureState extends NoteState {
+  String errorMessage;
+
+  NoteFailureState(
+    this.errorMessage,
+  );
+}
+
+class UpdateNoteSuccessState extends NoteState {}

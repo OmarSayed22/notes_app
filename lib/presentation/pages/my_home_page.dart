@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:notes_app/presentation/pages/edit_note_page.dart';
 
 import '../widgets/model_bottom_sheet.dart';
 import '../widgets/widgets.dart';
@@ -23,17 +22,12 @@ class MyHomePage extends StatelessWidget {
           onPressedIcon: () {},
         ),
       ),
-      body: GestureDetector(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const EditNotePage();
-            }));
-          },
-          child: itemsListView()),
+      body: itemsListView(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff54eedb),
         onPressed: () {
           showModalBottomSheet(
+              isScrollControlled: true,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               builder: (context) {

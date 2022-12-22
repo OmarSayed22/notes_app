@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-@HiveType(typeId: 0)
+@HiveType(typeId: 1)
 class NoteModel extends HiveObject {
   @HiveField(0)
   final String title;
@@ -8,7 +8,7 @@ class NoteModel extends HiveObject {
   final String subTitle;
   @HiveField(2)
   final DateTime date;
-  @HiveField(3)
+  @HiveField(4)
   final int color;
 
   NoteModel({

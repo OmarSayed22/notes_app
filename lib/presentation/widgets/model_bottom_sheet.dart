@@ -9,22 +9,16 @@ class ModelBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: BlocConsumer<NoteCubit, NoteState>(
-        listener: (context, state) {
-          if (state is AddNoteFailureState) {
-            print(state.errorMessage);
-          }
-        },
-        builder: (context, state) {
-          if (state is! AddNoteLoadingState) {
-            return const AddNoteForm();
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
-    );
+    return BlocBuilder<NoteCubit, NoteState>(builder: (context, state) {
+      return AbsorbPointer(
+          absorbing: state is AddNoteLoadingState ? true : false,
+          child: Padding(
+            padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: const SingleChildScrollView(child: AddNoteForm()),
+          ));
+    });
   }
 }
